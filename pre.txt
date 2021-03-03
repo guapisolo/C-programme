@@ -1,0 +1,15 @@
+git clone https://github.com/guapisolo/c2020
+cd c2020
+ls
+
+git config user.name=???
+git config user.email=???
+
+git remote -v
+git remote add upstream https://github.com/luckymark/c2020
+
+
+
+git remote add C-programme git@github.com:guapisolo/C-programme.git
+git branch -M main
+git push -u origin main
