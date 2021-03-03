@@ -1,0 +1,36 @@
+// https://code.visualstudio.com/docs/editor/tasks
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Compile",
+            "command": "gcc",
+            "args": [
+                "${file}",
+                "-o",
+                "${fileDirname}/${fileBasenameNoExtension}.exe",
+                // "-O2",
+                // "-O3",
+                "-g",
+                "-m64",
+                "-Wall",
+                "-Wl,--stack=134217728",
+                "-static-libgcc",
+                "-std=c11",
+                "-fexec-charset=GBK"
+            ],
+            "type": "process",
+            "group": {
+                "kind": "test",
+                "isDefault": true
+            },
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared"
+            },
+            "problemMatcher": "$gcc"
+        }
+    ]
+}
