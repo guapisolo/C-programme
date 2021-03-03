@@ -2,7 +2,7 @@
 #include <string.h>
 #include <windows.h>
 #define N1 105
-const int X=20,Y=20;
+const int X=20,Y=50;
 
 char str[N1];
 char mp[N1][N1];
