@@ -269,7 +269,7 @@ int main()
     LPDWORD num=0;
     // coord.Y=n+3;
     WriteConsoleA(output[now],"\n",1,num,NULL);
-    WriteConsoleA(output[now],"Congratulations!\n",9,num,NULL);
+    WriteConsoleA(output[now],"Congratulations!\n",17,num,NULL);
     SetConsoleActiveScreenBuffer(output[now]); //把缓冲区作为显示的缓冲区
     // puts("YOU WIN!");
     Sleep(1000000);
