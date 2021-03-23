@@ -49,9 +49,6 @@ void init_hard_version()
     int input=getch();
     switch(input)
     {
-        // case '1': n=10,m=10; system("mode con cols=30 lines=30"); break;
-        // case '2': n=20,m=20; system("mode con cols=25 lines=25"); break;
-        // case '3': n=30,m=50; system("mode con cols=35 lines=55"); break;
         case '1': n=10,m=10; break;
         case '2': n=20,m=20; break;
         case '3': n=26,m=50; break;
@@ -64,12 +61,6 @@ void init_hard_version()
             break;
         }
     }
-    // CONSOLE_SCREEN_BUFFER_INFO csbiInfo;
-    // SetConsoleScreenBufferSize(output[0],(COORD){n*30,m*30});
-	// GetConsoleScreenBufferInfo(output[0], &csbiInfo); //未改变？？？？
-    
-    // SetConsoleScreenBufferSize(output[1],(COORD){n*20,m*20});
-	// GetConsoleScreenBufferInfo(output[1], &csbiInfo); //未改变？？？？
 }
 
 struct node{ int x,y; };
@@ -212,6 +203,10 @@ int show(HANDLE hout,int &x,int &y,int to)
     CONSOLE_SCREEN_BUFFER_INFO csbiInfo;
     setcolor(hout,FOREGROUND_GREEN|FOREGROUND_INTENSITY,0); //|BACKGROUND_RED |FOREGROUND_INTENSITY
     
+	GetConsoleScreenBufferInfo(hout, &csbiInfo); //未改变？？？？
+    csbiInfo.dwCursorPosition=coord;
+	// wOldColorAttrs = csbiInfo.wAttributes;
+    
     if(cnt==2)
         bytes=0;
     LPDWORD num=0;
@@ -219,28 +214,18 @@ int show(HANDLE hout,int &x,int &y,int to)
     for(int i=0;i<=n;i++) 
     {
         coord.Y=i;
-    // setcolor(hout,FOREGROUND_RED,BACKGROUND_GREEN);
-        // WriteConsole();
         data[i][m+1]='\n';
-        // setcolor(hout,FOREGROUND_RED,BACKGROUND_GREEN);
-        if(x==i)
-        {
-            WriteConsoleA(hout,data[i],y,num,NULL);
-            setcolor(hout,FOREGROUND_RED|FOREGROUND_INTENSITY,0); //|BACKGROUND_RED |FOREGROUND_INTENSITY
-            WriteConsoleA(hout,data[i]+y,1,num,NULL);
-            setcolor(hout,FOREGROUND_GREEN|FOREGROUND_INTENSITY,0); //|BACKGROUND_RED |FOREGROUND_INTENSITY
-            WriteConsoleA(hout,data[i]+y+1,m+2-(y+1),num,NULL);
-        }else{
-            WriteConsoleA(hout,data[i],m+2,num,NULL);
-        }
+        WriteConsoleA(hout,data[i],m+2,num,NULL);
+        GetConsoleScreenBufferInfo(hout, &csbiInfo); 
     }
     coord.Y=0;
-    // h = GetStdHandle(STD_OUTPUT_HANDLE);
     SetConsoleActiveScreenBuffer(hout); //把缓冲区作为显示的缓冲区
-    // Sleep(2000);
+    
     cnt++;
     return 1;
 }
+
+
 
 int main()
 {
@@ -261,7 +246,7 @@ int main()
     LPDWORD num=0;
     // coord.Y=n+3;
     WriteConsoleA(output[now],"\n",1,num,NULL);
-    WriteConsoleA(output[now],"Congratulations!\n",19,num,NULL);
+    WriteConsoleA(output[now],"Congratulations!\n",17,num,NULL);
     SetConsoleActiveScreenBuffer(output[now]); //把缓冲区作为显示的缓冲区
     // puts("YOU WIN!");
     Sleep(1000000);

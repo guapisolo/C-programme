@@ -4,7 +4,8 @@
     "tasks": [
         {
             "label": "Compile",
-            "command": "g++",
+            // "command": "g++",
+            "command": "gcc",
             "args": [
                 "${file}",
                 "-o",
@@ -12,12 +13,13 @@
                 // "-O2",
                 // "-O3",
                 "-g",
-                "-m64",
+                // "-m64",
                 "-Wall",
                 "-Wl,--stack=134217728",
-                "-static-libgcc",
-                "-std=c++11",
-                "-fexec-charset=GBK"
+                // "-static-libgcc",
+                // "-std=c++11",
+                "-std=c11",
+                // "-fexec-charset=GBK"
             ],
             "type": "process",
             "group": {

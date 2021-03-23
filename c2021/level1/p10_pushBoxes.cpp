@@ -6,6 +6,10 @@
 #include <windows.h>
 #include <queue>
 #include <algorithm>
+#define FG FOREGROUND_GREEN
+#define FR FOREGROUND_RED
+#define FB FOREGROUND_BLUE
+#define FI FOREGROUND_INTENSITY
 #define dd double
 #define ll long long 
 #define ull unsigned long long 
@@ -13,39 +17,23 @@ using namespace std;
 
 // // 生成迷宫：生成树算法
 // // 我的做法：随机边权然后最小生成树
-int n,m,cte;
-struct EDGE{ 
-int x,y,w; 
-friend bool operator < (const EDGE &s1,const EDGE &s2)
-{
-    return s1.w<s2.w;
-}
-}e[1500*4+5]; 
-
+int n,m,Score;
 
 HANDLE output[2];
 COORD coord = {0,0};
 DWORD bytes = 0;
-int cmp(EDGE aa,EDGE bb)
-{
-    return aa.w<bb.w;
-}
 int checkx(int x,int y)
 {
     if(x>=1 && x<n && y>=1 && y<m) return 1;
     return 0;
 }
 int id(int x,int y){ return m*x+y; }
-char data[32][52];
+char data[32][102];
 int fx[5] = {0,-1,1,0,0}, fy[5] = {0,0,0,-1,1}; //*wsad
 
 void init_hard_version()
 {
-    puts("Plz choose difficulty:");
-    puts("press [1] to choose easy difficulty");
-    puts("press [2] to choose standard difficulty");
-    puts("press [3] to choose hard difficulty");
-    puts("press [4] to choose customized difficulty");
+    puts("press any key to start");
     int input=getch();
     switch(input)
     {
@@ -64,72 +52,6 @@ void init_hard_version()
             break;
         }
     }
-    // CONSOLE_SCREEN_BUFFER_INFO csbiInfo;
-    // SetConsoleScreenBufferSize(output[0],(COORD){n*30,m*30});
-	// GetConsoleScreenBufferInfo(output[0], &csbiInfo); //未改变？？？？
-    
-    // SetConsoleScreenBufferSize(output[1],(COORD){n*20,m*20});
-	// GetConsoleScreenBufferInfo(output[1], &csbiInfo); //未改变？？？？
-}
-
-struct node{ int x,y; };
-int fa[2005];
-int idx(int x,int y){ return (x-1)*m+y; }
-int findfa(int x)
-{
-    int y=x,tmp;
-    while(y!=fa[y]) y=fa[y];
-    while(fa[x]!=x){
-        tmp=fa[x]; fa[x]=y, x=tmp;
-    }
-    return y;
-}
-void printmap()
-{
-    system("cls");
-    for(int i=0;i<=n;i++,puts("")) for(int j=0;j<=m;j++) 
-        if(data[i][j]) printf("%c",data[i][j]);
-        else printf(" ");
-}
-void build_puzzle()
-{
-    for(int i=1;i<n;i++) for(int j=1;j<m;j++) 
-    {
-        fa[idx(i,j)]=idx(i,j);
-        if((i&1)^(j&1))
-            e[++cte]=(EDGE){i,j,rand()*rand()%1000000};
-        else if(i&1) data[i][j]=0; 
-    }
-    sort(e+1,e+cte+1);
-    int x,y,ia,ib;
-    for(int j=1;j<=cte;j++)
-    {
-        x=e[j].x; y=e[j].y; //id=idx(x,y);
-        if(x&1){
-            if(checkx(x,y-1)&&checkx(x,y+1))
-            {
-                ia=idx(x,y-1); ib=idx(x,y+1);
-                ia=findfa(ia); ib=findfa(ib);
-                if(ia!=ib){ 
-                    fa[ia]=ib; data[x][y]=0; }
-                else{
-                    // data[x][y]='$';
-                }
-            }
-        }else{
-            if(checkx(x+1,y)&&checkx(x-1,y))
-            {
-                ia=idx(x+1,y); ib=idx(x-1,y);
-                ia=findfa(ia); ib=findfa(ib);
-                if(ia!=ib){ 
-                    fa[ia]=ib; data[x][y]=0; }
-                else{
-                    // data[x][y]='$';
-                }
-            }
-        }
-    }
-    // printmap();
 }
 
 //以下为部分借鉴的模板
@@ -139,14 +61,15 @@ int show(HANDLE hout,int &x,int &y,int to);
 int get_toward();
 int cnt=0;
 
+int checkok(int x,int y)
+{
+    return x>=1 && x<n && y>=1 && y<m;
+}
 void setcolor(HANDLE hCon,unsigned short ForeColor,unsigned short BackGroundColor)
 {
-    // HANDLE hCon = GetStdHandle(STD_OUTPUT_HANDLE); //获得缓冲区句柄
     bool flag=SetConsoleTextAttribute(hCon,ForeColor|BackGroundColor); //设置文本及背景颜色
-    flag=flag^1; flag=flag^1;
-    // SetConsoleTextAttribute(hCon,FOREGROUND_RED | FOREGROUND_INTENSITY | BACKGROUND_GREEN); //设置文本及背景颜色
 }
-void initconsolveScreenBuffer()
+void initconsolveScreenBuffer(int &x,int &y)
 {
     output[0] = CreateConsoleScreenBuffer(
         GENERIC_WRITE|GENERIC_READ,
@@ -168,9 +91,14 @@ void initconsolveScreenBuffer()
     SetConsoleCursorInfo(output[0],&cci);
     SetConsoleCursorInfo(output[1],&cci);
     //start data
-    for(int i=0;i<=n;i++) for(int j=0;j<=m;j++) data[i][j]='#';
-    build_puzzle();
-    data[0][1]='W';
+    memset(data,0,sizeof(data));
+    scanf("%d%d",&n,&m);
+    for(int i=0;i<=n;i++)
+    {
+        scanf("%s",data[i]);
+        for(int j=0;j<=m;j++) if(data[i][j]=='@') 
+            x=i, y=j;
+    }
 }
 int get_toward()
 {
@@ -198,102 +126,105 @@ int get_toward()
     }
     return to;
 }
+void print_unique(HANDLE hout,int i,int y,int color)
+{
+    LPDWORD num=0;
+    setcolor(hout,color,0); //|BACKGROUND_RED |FOREGROUND_INTENSITY
+    WriteConsoleA(hout,data[i]+y,1,num,NULL);
+}
 int is_start;
 int show(HANDLE hout,int &x,int &y,int to)
 {
-    if(!to) return 0; if(to==-1) return 1;
-    if(x+fx[to]>=1 && x+fx[to]<n && y+fy[to]>=1 && y+fy[to]<m && !data[x+fx[to]][y+fy[to]]) //&& 
+    if(!to) return 0; if(to==-1) return 1; char c;
+    if(checkok(x+fx[to],y+fy[to])) //&& 
     {
-        swap(data[x][y],data[x+fx[to]][y+fy[to]]);
+        c=data[x+fx[to]][y+fy[to]];
+        if(!c){ //目标是空
+            swap(data[x][y],data[x+fx[to]][y+fy[to]]);
+        }else if(c=='$'){ //目标是箱子
+            if(checkok(x+2*fx[to],y+2*fy[to]))
+            {
+                if(data[x+2*fx[to]][y+fy[to]]=='?'){
+                    data[x+fx[to]][y+fy[to]]=data[x][y]; data[x][y]=0; 
+                    data[x+2*fx[to]][y+fy[to]]='%';
+                    Score++;
+                }else if(!data[x+2*fx[to]][y+2*fy[to]]){
+                    swap(data[x+fx[to]][y+fy[to]],data[x+2*fx[to]][y+2*fy[to]]);
+                    swap(data[x+fx[to]][y+fy[to]],data[x][y]);
+                }
+            }
+        }
         x+=fx[to]; y+=fy[to];
     }
-    if(is_start) data[0][1]='#';
     
     CONSOLE_SCREEN_BUFFER_INFO csbiInfo;
     setcolor(hout,FOREGROUND_GREEN|FOREGROUND_INTENSITY,0); //|BACKGROUND_RED |FOREGROUND_INTENSITY
     
-	GetConsoleScreenBufferInfo(hout, &csbiInfo); //未改变？？？？
-    csbiInfo.dwCursorPosition=coord;
-	// wOldColorAttrs = csbiInfo.wAttributes;
-    
-    if(cnt==2)
-        bytes=0;
     LPDWORD num=0;
     SetConsoleCursorPosition(hout,coord);
     for(int i=0;i<=n;i++) 
     {
-        coord.Y=i;
-    // setcolor(hout,FOREGROUND_RED,BACKGROUND_GREEN);
-        // WriteConsole();
-        data[i][m+1]='\n';
-        // setcolor(hout,FOREGROUND_RED,BACKGROUND_GREEN);
-        WriteConsoleA(hout,data[i],m+2,num,NULL);
-        GetConsoleScreenBufferInfo(hout, &csbiInfo); //未改变？？？？
-    // SetConsoleActiveScreenBuffer(hout); //把缓冲区作为显示的缓冲区
-        // WriteConsole()
-        // WriteConsoleOutputCharacter(hout,data[i],m+1,coord,&bytes);
-        // WriteConsoleOutputCharacterA(hout,data[i],m+1,coord,&bytes);
+        coord.Y=i; 
+        for(int j=0;j<=m;j++)
+        {
+            switch(data[i][j])
+            {
+                case '#': print_unique(hout,i,j,FG|FI);
+                case '$': print_unique(hout,i,j,FG|FR|FI);
+                case '?': print_unique(hout,i,j,FR|FB|FI);
+                case '@': print_unique(hout,i,j,FR|FI);
+                case 0 : print_unique(hout,i,j,0);
+            }
+        }
     }
     coord.Y=0;
     // h = GetStdHandle(STD_OUTPUT_HANDLE);
     SetConsoleActiveScreenBuffer(hout); //把缓冲区作为显示的缓冲区
-    // puts("666");
-	// Save the current color
-    
-    // puts("666");
+    // Sleep(2000);
     cnt++;
     return 1;
 }
 
-
-
 int main()
 {
-    // scanf("%d",&n);
-    srand(time(NULL));
-    // system("color 0E");
-    init_hard_version();
-    initconsolveScreenBuffer();
-    int to=2,now=1,x=0,y=1; //初始化输出一次
-    is_start=1; show(output[now],x,y,to); is_start=0; now^=1;
-    while(to=get_toward())
+    // init_hard_version();
+    int task=3;
+    while(task<=5)
     {
-        show(output[now],x,y,to);
-        if(x==n-1 && y==m-1) 
-            { n=n; break; }
-        now^=1;
+        switch(task)
+        {
+            case 1: freopen("round1.in","r",stdin); break;
+            case 2: freopen("round2.in","r",stdin); break;
+            case 3: freopen("round3.in","r",stdin); break;
+            case 4: freopen("round4.in","r",stdin); break;
+            case 5: freopen("round5.in","r",stdin); break;
+        }
+        int to=0,now=1,x,y; //初始化输出一次
+        initconsolveScreenBuffer(x,y);
+        show(output[now],x,y,to); is_start=0; now^=1;
+        while(to=get_toward())
+        {
+            show(output[now],x,y,to);
+            if(x==n-1 && y==m-1) 
+                { n=n; break; }
+            now^=1;
+        }
+        LPDWORD num=0;
+        // coord.Y=n+3;
+        WriteConsoleA(output[now],"\n",1,num,NULL);
+        WriteConsoleA(output[now],"Congratulations!\n",19,num,NULL);
+        SetConsoleActiveScreenBuffer(output[now]); //把缓冲区作为显示的缓冲区
+        Sleep(3000);
+        task++;
     }
-    // system("cls");
-    // HANDLE hout=GetStdHandle(STD_OUTPUT_HANDLE);
-    // SetStdHandle(STD_OUTPUT_HANDLE,hout);
-    LPDWORD num=0;
-    // coord.Y=n+3;
-    WriteConsoleA(output[now],"\n",1,num,NULL);
-    WriteConsoleA(output[now],"Congratulations!\n",9,num,NULL);
-    SetConsoleActiveScreenBuffer(output[now]); //把缓冲区作为显示的缓冲区
     // puts("YOU WIN!");
     Sleep(1000000);
     return 0;
 }
 
+// #：墙
+// @：玩家位置
+// $：箱子
+// ?：目标地点
+// %：已经得分
 
-
-
-    // queue<node>que; que.push((node){1,1}); data[1][1]=0;
-    // node k; int x,y,cnt,tmp;
-    // while(!que.empty())
-    // {
-    //     k=que.front(); que.pop();
-    //     x=k.x; y=k.y; cnt=0; 
-    //     for(int k=1;k<=4;k++) if(checkx(x+fx[k],y+fy[k]) && data[x+fx[k]][y+fy[k]]) cnt++;
-    //     if(cnt==0) continue;
-    //     tmp=rand()%cnt;
-    //     for(int k=1;k<=4;k++) if(checkx(x+fx[k],y+fy[k]) && data[x+fx[k]][y+fy[k]]) 
-    //     {
-            
-    //         if(tmp) tmp--; else {
-    //             que.push((node){x+fx[k],y+fy[k]});
-    //             data[x+fx[k]][y+fy[k]]=0;
-    //         }
-    //     }
-    // }
