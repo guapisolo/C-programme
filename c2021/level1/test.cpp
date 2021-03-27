@@ -1,4 +1,5 @@
 #include<iostream>
+#include <fstream>
 #include <cstdio>
 #include <algorithm>
 #include<windows.h>
@@ -20,6 +21,7 @@ int main()
         system(comm);
         Sleep(1000);
     }
+    ifstream infile; infile.open()
     return 0;
 }
 
