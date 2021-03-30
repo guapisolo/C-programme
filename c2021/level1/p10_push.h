@@ -106,9 +106,17 @@ void print_unique(HANDLE hout,int i,int y,int color)
     setcolor(hout,color,0); //|BACKGROUND_RED |FOREGROUND_INTENSITY
     WriteConsoleA(hout,data[i]+y,1,num,NULL);
 }
-// void print_steps();
+void put_str(HANDLE hout,int color,char *s,int type)
+{
+    LPDWORD num=0;
+    setcolor(hout,color,0);
+    WriteConsoleA(hout,s,strlen(s),num,NULL);
+    if(type) SetConsoleActiveScreenBuffer(hout); //把缓冲区作为显示的缓冲区
+}
 
-int is_start;
+
+int is_start,task=1;
+char str[100];
 int show(HANDLE hout,int &x,int &y,int to)
 {
     
@@ -119,7 +127,7 @@ int show(HANDLE hout,int &x,int &y,int to)
         if(c==' '||c=='@'){ //目标是空
             swap(data[x][y],data[x+fx[to]][y+fy[to]]);
             x+=fx[to]; y+=fy[to];
-            step++;
+            if(c!='@') step++;
         }else if(c=='$'){ //目标是箱子
             if(checkok(x+2*fx[to],y+2*fy[to]))
             {
@@ -144,9 +152,15 @@ int show(HANDLE hout,int &x,int &y,int to)
     
     LPDWORD num=0;
     SetConsoleCursorPosition(hout,coord);
+    sprintf(str,"LEVEL:%d\n",task);
+    put_str(hout,FOREGROUND_GREEN|FOREGROUND_INTENSITY,str,0);
+    sprintf(str,"Score:%d\n\n",step);
+    // put_str(hout,FOREGROUND_GREEN|FOREGROUND_BLUE|FOREGROUND_INTENSITY,str,0);
+    put_str(hout,FOREGROUND_GREEN|FOREGROUND_INTENSITY,str,0);
+    
     for(int i=0;i<=n;i++) 
     {
-        coord.Y=i; data[i][m+1]='\n';
+        data[i][m+1]='\n'; //coord.Y=i; 
         for(int j=0;j<=m+1;j++)
         {
             switch(data[i][j])
@@ -168,4 +182,3 @@ int show(HANDLE hout,int &x,int &y,int to)
     cnt++;
     return 1;
 }
-

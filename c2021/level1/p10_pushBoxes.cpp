@@ -16,14 +16,11 @@
 #define ull unsigned long long 
 using namespace std;
 
-// // 生成迷宫：生成树算法
-// // 我的做法：随机边权然后最小生成树
-
 int main()
 {
     // init_hard_version();
-    int task=3;
-    while(task<=5)
+    int to=0,now=1,x,y; //初始化输出一次
+    while(task<=4)
     {
         switch(task)
         {
@@ -31,12 +28,10 @@ int main()
             case 2: freopen("round2.in","r",stdin); break;
             case 3: freopen("round3.in","r",stdin); break;
             case 4: freopen("round4.in","r",stdin); break;
-            case 5: freopen("round5.in","r",stdin); break;
         }
-        int to=0,now=1,x,y; //初始化输出一次
         initconsolveScreenBuffer(x,y); Score=0;
         fclose(stdin); 
-        to=5; show(output[now],x,y,to); now^=1;
+        now=1; to=5; show(output[now],x,y,to); now^=1;
         while(to=get_toward())
         {
             show(output[now],x,y,to);
@@ -46,14 +41,16 @@ int main()
         }
         LPDWORD num=0;
         // coord.Y=n+3;
-        setcolor(output[now],FOREGROUND_GREEN|FOREGROUND_INTENSITY,0); //|BACKGROUND_RED |FOREGROUND_INTENSITY
         WriteConsoleA(output[now],"\n",1,num,NULL);
-        WriteConsoleA(output[now],"Congratulations!\n",17,num,NULL);
-        SetConsoleActiveScreenBuffer(output[now]); //把缓冲区作为显示的缓冲区
-        Sleep(5000);
+        put_str(output[now],FOREGROUND_GREEN|FOREGROUND_INTENSITY,"Congratulations!\n",1);
+        // WriteConsoleA(output[now],"Congratulations!\n",17,num,NULL);
+        // SetConsoleActiveScreenBuffer(output[now]); //把缓冲区作为显示的缓冲区
+        if(task==4) break;
+        Sleep(3000);
         task++;
     }
-    // puts("YOU WIN!");
+    // put_str(output[now],FOREGROUND_GREEN|FOREGROUND_GREEN|FOREGROUND_INTENSITY,"YOU WIN!!!\n",1);
+    put_str(output[now],FOREGROUND_GREEN|FOREGROUND_INTENSITY,"YOU WIN!!!\n",1);
     Sleep(1000000);
     return 0;
 }
