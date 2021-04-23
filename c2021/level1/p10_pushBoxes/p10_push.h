@@ -133,7 +133,7 @@ int show(HANDLE hout,int &x,int &y,int to)
             {
                 if(data[x+2*fx[to]][y+2*fy[to]]=='?'){
                     data[x+fx[to]][y+fy[to]]=data[x][y]; data[x][y]=' '; 
-                    data[x+2*fx[to]][y+2*fy[to]]='%';
+                    data[x+2*fx[to]][y+2*fy[to]]='&';
                     Score++;
                     x+=fx[to]; y+=fy[to];
                     step++;
@@ -152,11 +152,21 @@ int show(HANDLE hout,int &x,int &y,int to)
     
     LPDWORD num=0;
     SetConsoleCursorPosition(hout,coord);
-    sprintf(str,"LEVEL:%d\n",task);
-    put_str(hout,FOREGROUND_GREEN|FOREGROUND_INTENSITY,str,0);
-    sprintf(str,"Score:%d\n\n",step);
-    // put_str(hout,FOREGROUND_GREEN|FOREGROUND_BLUE|FOREGROUND_INTENSITY,str,0);
-    put_str(hout,FOREGROUND_GREEN|FOREGROUND_INTENSITY,str,0);
+    sprintf(str,"LEVEL:%d\11\11",task);
+    put_str(hout,FG|FB|FI,str,0);
+    sprintf(str,"@:Player  "); 
+    put_str(hout,FR|FI,str,0);
+    sprintf(str,"#:Wall    \n"); 
+    put_str(hout,FG|FI,str,0);
+    
+    sprintf(str,"Score:%d \11",step);
+    put_str(hout,FG|FB|FI,str,0);
+    sprintf(str,"$:Box     "); 
+    put_str(hout,FG|FR|FI,str,0);
+    sprintf(str,"?:Target  \n"); 
+    put_str(hout,FR|FB|FI,str,0);
+    sprintf(str,"\11\11&:Obtained\n"); 
+    put_str(hout,FB|FI,str,0);
     
     for(int i=0;i<=n;i++) 
     {
@@ -165,11 +175,11 @@ int show(HANDLE hout,int &x,int &y,int to)
         {
             switch(data[i][j])
             {
+                case '@': print_unique(hout,i,j,FR|FI); break;
                 case '#': print_unique(hout,i,j,FG|FI); break;
                 case '$': print_unique(hout,i,j,FG|FR|FI); break;
                 case '?': print_unique(hout,i,j,FR|FB|FI); break;
-                case '@': print_unique(hout,i,j,FR|FI); break;
-                case '%': print_unique(hout,i,j,FB|FI); break;
+                case '&': print_unique(hout,i,j,FB|FI); break;
                 default: print_unique(hout,i,j,0); break;
                 // case ' ': print_unique(hout,i,j,0);
             }

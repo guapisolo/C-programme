@@ -1,4 +1,20 @@
-#include "p10_pushBoxes.h"
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
+#include <conio.h>
+#include <time.h>
+#include <windows.h>
+#include <queue>
+#include <algorithm>
+#include "p10_push.h"
+#define FG FOREGROUND_GREEN
+#define FR FOREGROUND_RED
+#define FB FOREGROUND_BLUE
+#define FI FOREGROUND_INTENSITY
+#define dd double
+#define ll long long 
+#define ull unsigned long long 
+using namespace std;
 
 int main()
 {
