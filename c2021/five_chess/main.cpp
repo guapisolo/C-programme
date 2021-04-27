@@ -1,6 +1,7 @@
 #include <cstdio>
 #include <algorithm>
 #include <windows.h>
+#pragma GCC optimize(3)
 using namespace std;
 
 #define __AI_H
@@ -20,13 +21,18 @@ int main()
     {
         system("cls");
         puts("Press [1] to start a two-player battle");
-        puts("Press [2] to play with computer");
+        puts("Press [2] to play with computer with back hand");
+        puts("Press [3] to play with computer with first move");
+        puts("Press [4] to watch computer battle with itself");
         puts("Press [0] to exit");
         to=get_command();
         switch(to)
         {
             // case 1: two_player(); break;
-            case 2: fkcomputer(1); Sleep(1000000); break;
+            case 1: PLAY(0,1); Sleep(1000000); break;
+            case 2: PLAY(1,1); Sleep(1000000); break;
+            case 3: PLAY(2,1); Sleep(1000000); break;
+            case 4: PLAY(3,1); Sleep(1000000); break;
         }
         if(to==0) break;
     }

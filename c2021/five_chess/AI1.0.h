@@ -17,17 +17,17 @@
 #define __FRONT_H
 #include "front.h"
 
-#define ll int 
+#define ll long long 
 #define dd double 
 using namespace std;
 
-const int n=15, N1=17, inf=0x3f3f3f3f, eps=100000;
+const int n=15, N1=17, inf=0x3f3f3f3f;
 
 int mp[N1][N1]; //0 empty   1 o   -1 x
 // int anxt[]={0, 100000, 10000, 1500, 1400, 30, 28, 5};
 // int anow[]={0, 90000,  9000, 1300, 1200, 24, 22, 6};
-int anxt[]={0, 700000, 70000, 4000, 3900, 30, 28, 5};
-int anow[]={0, 300000,  30000, 3500, 3300, 24, 22, 6};
+int anxt[]={0, 200000, 30000, 4000, 3900, 30, 28, 5};
+int anow[]={0, 180000,  29000, 3500, 3300, 24, 22, 6};
 int val[N1];
 //val: 
 // 1:连5
@@ -206,15 +206,14 @@ ll totMap(int now,int nxt)
     o=nxt; x=now;
     ans+=Map();
     
-    // return ans;
-    return -ans;
+    return ans;
 }
 };
 //记录不同位置落子的结果信息
 
 int realmap[N1][N1];
-const int dfs_deep=5;
-const int bfs_num=6;
+const int dfs_deep=4;
+const int bfs_num=5;
 
 //plan A: 迭代加深搜索，每次搜4个最优状态
 struct Play{ 
@@ -222,81 +221,65 @@ int x,y; ll val;
 }; //int pcnt;
 int cmpmin(Play &s1,Play &s2)
 { return s1.val < s2.val; }
-int cmpmax(Play &s1,Play &s2)
-{ return s1.val > s2.val; }
 struct ChessMap{
 int a[N1][N1];
 }cur[N1];
 
 int checkwinner();
 void outputcurmap();
-void savecurmap();
 
 int posx, posy;
-//改为 迭代加深 + alpha-beta剪枝
-ll AlphaBeta(int dep,int now,int Alpha,int Beta)
+ll iterative_dfs(int dep,int now)
 {
     // check(now,nxt);
-    ll threat, ma=-inf, tmp; 
+    ll threat, ma=-inf, mi=inf, tmp; 
     Play piece[N1*N1]; memset(piece,0,sizeof(piece)); int pcnt=0;
     //malloc
     for(int i=1;i<=n;i++) for(int j=1;j<=n;j++) if(!cur[dep-1].a[i][j]) 
     {
         memcpy(mp,cur[dep-1].a,sizeof(mp)); mp[i][j]=now;
         threat = assess::totMap(now,-now);
-        ma = max(ma,threat);
+        mi = min(mi,threat);
         piece[++pcnt] = (Play){i,j,threat}; //记录当前落子的估值
     }
-    sort(piece+1,piece+pcnt+1,cmpmax);
+    sort(piece+1,piece+pcnt+1,cmpmin);
     int id=0;
-    if(dep==dfs_deep||( ma <= -anxt[1]+eps || ma >= anow[1]-eps )) return ma;
+    if(dep==dfs_deep) return mi;
     for(int k=1;k <= bfs_num;k++)
     {
         int i = piece[k].x, j = piece[k].y;
         memcpy(cur[dep].a,cur[dep-1].a,sizeof(mp)); cur[dep].a[i][j]=now;
-        tmp = -AlphaBeta(dep+1,-now,-Beta,-Alpha);
-        if(tmp >= Beta) return Beta;
-        if(tmp > Alpha){
-            Alpha = tmp;
-            id = k;
-        } 
+        tmp = iterative_dfs(dep+1,-now);
+        if(tmp>ma) ma=tmp, id=k;
     }
     if(dep==1){ posx = piece[id].x; posy = piece[id].y; }
-    return Alpha;
+    return piece[id].val;
 }
-int step=0,lx=8,ly=8;
+int step=0;
 
-int computer_move(int now,int &nx,int &ny)
+void fkcomputer(int now)
 {
-    int id = AlphaBeta(1,now,-inf,inf);
-    realmap[posx][posy] = now;
+    // iterative_dfs(nxt,now);
+    memcpy(cur[0].a,realmap,sizeof(cur[0].a));
+    // if(step==6)
+    // {
+    //     outputcurmap();
+    //     de=1;2
+    // }
+    int id = iterative_dfs(1,now);
+    realmap[posx][posy]=now;
     printmap(realmap,n);
-    nx = posx, ny = posy;
-    int fl = checkwinner(); if(fl) return fl;
+    int fl = checkwinner(); if(fl) return; 
     step++;
-    memcpy(cur[0].a,realmap,sizeof(cur[0].a));
-    return 0;
-}
-int player_move(int now,int &nx,int &ny)
-{
-    place_piece(realmap,nx,ny,now,n);
-    realmap[nx][ny] = now;
-    int fl = checkwinner(); if(fl) return fl;
+    
+    int nx=8,ny=8; 
+    player_move(realmap,nx,ny,-now,n);
+    realmap[nx][ny]=-now;
+    fl = checkwinner(); if(fl) return; 
+    // printmap();
     step++;
-    memcpy(cur[0].a,realmap,sizeof(cur[0].a));
-    return 0;
-}
-
-int nx=8, ny=8, tmp;
-void PLAY(int type,int now)
-{
-    if((type&1)) tmp = computer_move(now,nx,ny);
-    else tmp = player_move(now,nx,ny);
-    if(tmp) return;
-    if((type&2)) tmp = computer_move(-now,nx,ny);
-    else tmp = player_move(-now,nx,ny);
-    if(tmp) return;
-    PLAY(type, now);
+    
+    fkcomputer(now);
 }
 
 void inputmap()
@@ -311,27 +294,13 @@ void outputcurmap()
     {
         for(int j=1;j<=n;j++)
         {
-            sprintf(outstr,"%d ",realmap[i][j]); 
+            sprintf(outstr,"%d ",mp[i][j]); 
             dprintf(outstr,0,FG|FB|FR|FI,0,0);
         }
         dprintf("\n",0,FG|FB|FR|FI,0,i==n?1:0);
     }
 }
-void savecurmap()
-{
-    freopen("curmap.out","w",stdout);
-    char outstr[5];
-    for(int i=1;i<=n;i++,puts("")) 
-    {
-        for(int j=1;j<=n;j++)
-        {
-            printf("%d ",realmap[i][j]); 
-        }
-    }
-    fclose(stdout);
-}
-
-int checkwinner() //O(map)
+int checkwinner()
 {
     memcpy(mp,realmap,sizeof(mp)); 
     memcpy(val,anow,sizeof(val)); assess::o=1; assess::x=-1;
@@ -355,3 +324,39 @@ int main()
     return 0;
 }
 #endif
+
+// int cmpmax(Play &s1,Play &s2)
+// { return s1.val > s2.val; }
+
+// struct ChessMap{
+// int fa,a[N1][N1];
+// }cur[N1][N1],son[N1*N1*N1]; int ccnt,scnt;
+
+// void get_cur_son(int dep,int num,int now)
+// {
+//     ll threat; 
+//     if(!cur[dep][num].fa) return;
+//     for(int i=1;i<=n;i++) for(int j=1;j<=n;j++) if(!cur[dep][num].a[i][j]) 
+//     {
+//         memcpy(mp,cur[dep][num].a,sizeof(mp)); mp[i][j]=now;
+//         threat=assess::totMap(now,-now);
+//         piece[++pcnt]=(Play){i,j,++scnt,threat}; //记录当前落子的估值
+//         memcpy(son[scnt].a,mp,sizeof(mp));  //记录当前落子的棋盘
+//         son[scnt].fa=num;
+//     }
+// }
+// void iterative_dfs(int st)
+// {
+//     int now=st;
+//     for(int dep=0;dep < dfs_deep;dep++)
+//     {
+//         pcnt=0; scnt=0;
+//         for(int num=1;num <= bfs_num;num++) get_cur_son(dep,num,now);
+//         sort(piece+1,piece+pcnt+1,cmpmin);
+//         for(int i=1;i<=bfs_num;i++)
+//         {
+//             cur[dep+1][i]=son[piece[i].id];
+//         }
+//         now = -now;
+//     }
+// }

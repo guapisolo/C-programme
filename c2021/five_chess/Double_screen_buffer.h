@@ -18,7 +18,6 @@
 #define BB BACKGROUND_BLUE
 #define BI BACKGROUND_INTENSITY
 #define dd double
-#define ll long long 
 #define ull unsigned long long 
 using namespace std;
 

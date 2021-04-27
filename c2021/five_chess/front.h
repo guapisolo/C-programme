@@ -8,6 +8,7 @@ int get_command()
         case '1': to=1; break;
         case '2': to=2; break;
         case '3': to=3; break;
+        case '4': to=4; break;
         case '0': to=0; break;
         default : to=-1; break; 
     }
@@ -23,6 +24,7 @@ int get_toward()
         case 'a': to=3; break;
         case 'd': to=4; break;
         case 13: to=5; break;
+        case 'p': to=6; break;
         case '0': to=0; break; //退出程序
         case 224:
         {
@@ -81,7 +83,7 @@ int checkchess(int x,int y)
     return 0;
 }
 
-void player_move(int mp[M1][M1],int &nx,int &ny,int now,int n)
+void place_piece(int mp[M1][M1],int &nx,int &ny,int now,int n)
 {
     int to;
     // memcpy(outmap,mp,sizeof(outmap)); outmap[nx][ny]+=3;
