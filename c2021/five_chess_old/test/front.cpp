@@ -1,4 +1,9 @@
-#include <conio.h>
+
+#define front_exist
+#include "func.h"
+
+// extern ChessMap cur[N1];
+// extern int realmap[N1][N1];
 
 int get_command()
 {
@@ -19,6 +24,7 @@ int get_toward()
     int input=getch(),to;
     switch(input)
     {
+        // case '': to=5; break; 
         case 'w': to=1; break;
         case 's': to=2; break;
         case 'a': to=3; break;
@@ -68,7 +74,6 @@ void printmap(int mp[17][17],int n)
     }
 }
 
-const int M1=17, m=15;
 int outmap[M1][M1];
 int fx[6] = {0,-1,1,0,0,0}, fy[6] = {0,0,0,-1,1,0}; //*wsad
 
@@ -92,6 +97,7 @@ void place_piece(int mp[M1][M1],int &nx,int &ny,int now,int n)
     while(1)
     {
         to = get_toward();
+        if(to==6){ savecurmap(); continue; }
         if(!checkposition(nx+fx[to],ny+fy[to])) continue;
         memcpy(outmap,mp,sizeof(outmap));
         if(1<=to && to<=4){

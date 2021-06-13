@@ -1,33 +1,25 @@
-#ifndef __AI_H
-#endif
-
-#include <conio.h>
-#include <cstdio>
-#include <cstring>
-#include <algorithm>
-#include <stdio.h>
-#include <string.h>
-#include <stdlib.h>
-#include <time.h>
-#include <windows.h>
-#include <queue>
-#include <algorithm>
-#define __Double_H
-#include "Double_screen_buffer.h"
-#define __FRONT_H
-#include "front.h"
+// #ifndef __AI_H
+// #endif
+#define AI_exist
+#include "func.h"
+// #define __Double_H
+// #include "Double_screen_buffer.h"
+// #define __FRONT_H
+// #include "front.h"
 
 #define ll int 
 #define dd double 
 using namespace std;
 
-const int n=15, N1=17, inf=0x3f3f3f3f, eps=100000;
+// extern ChessMap cur[N1];
+// extern int realmap[N1][N1];
 
 int mp[N1][N1]; //0 empty   1 o   -1 x
-// int anxt[]={0, 100000, 10000, 1500, 1400, 30, 28, 5};
-// int anow[]={0, 90000,  9000, 1300, 1200, 24, 22, 6};
-int anxt[]={0, 700000, 70000, 4000, 3900, 30, 28, 5};
-int anow[]={0, 300000,  30000, 3500, 3300, 24, 22, 6};
+// previous
+// int anxt[]={0, 700000, 70000, 4000, 3900, 30, 28, 5};
+// int anow[]={0, 300000, 30000, 3500, 3300, 24, 22, 6};
+int anxt[]={0, 900000, 90000, 7500, 7000, 30, 28, 5};
+int anow[]={0, 400000,  40000, 3000, 2500, 24, 22, 6};
 int val[N1];
 //val: 
 // 1:连5
@@ -39,9 +31,10 @@ int val[N1];
 // 7:活1
 int de;
 
+// struct ChessMap{ int a[N1][N1]; }cur[N1];
+// int realmap[N1][N1];
 namespace assess{
 int end4[N1][N1], ed[N1] ,num[N1], o,x;
-
 
 //连五
 ll check1(int *row,int len) 
@@ -212,7 +205,6 @@ ll totMap(int now,int nxt)
 };
 //记录不同位置落子的结果信息
 
-int realmap[N1][N1];
 const int dfs_deep=5;
 const int bfs_num=6;
 
@@ -224,9 +216,6 @@ int cmpmin(Play &s1,Play &s2)
 { return s1.val < s2.val; }
 int cmpmax(Play &s1,Play &s2)
 { return s1.val > s2.val; }
-struct ChessMap{
-int a[N1][N1];
-}cur[N1];
 
 int checkwinner();
 void outputcurmap();
@@ -240,21 +229,30 @@ ll AlphaBeta(int dep,int now,int Alpha,int Beta)
     ll threat, ma=-inf, tmp; 
     Play piece[N1*N1]; memset(piece,0,sizeof(piece)); int pcnt=0;
     //malloc
+    int tx=0,ty=0;
     for(int i=1;i<=n;i++) for(int j=1;j<=n;j++) if(!cur[dep-1].a[i][j]) 
     {
         memcpy(mp,cur[dep-1].a,sizeof(mp)); mp[i][j]=now;
         threat = assess::totMap(now,-now);
-        ma = max(ma,threat);
+        if(threat>ma) tx = i, ty = j;
+        ma = max(ma,threat); 
         piece[++pcnt] = (Play){i,j,threat}; //记录当前落子的估值
     }
     sort(piece+1,piece+pcnt+1,cmpmax);
     int id=0;
-    if(dep==dfs_deep||( ma <= -anxt[1]+eps || ma >= anow[1]-eps )) return ma;
+    if( ma <= -anxt[1]+eps || ma >= anow[1]-eps )
+    {
+        if(dep==1) posx = tx, posy = ty;
+        return ma;
+    }
+    if(dep==dfs_deep) return ma;
     for(int k=1;k <= bfs_num;k++)
     {
         int i = piece[k].x, j = piece[k].y;
         memcpy(cur[dep].a,cur[dep-1].a,sizeof(mp)); cur[dep].a[i][j]=now;
         tmp = -AlphaBeta(dep+1,-now,-Beta,-Alpha);
+    if(dep==1)
+        de=1;
         if(tmp >= Beta) return Beta;
         if(tmp > Alpha){
             Alpha = tmp;
@@ -268,6 +266,8 @@ int step=0,lx=8,ly=8;
 
 int computer_move(int now,int &nx,int &ny)
 {
+    if(step==0)
+        de=1;
     int id = AlphaBeta(1,now,-inf,inf);
     realmap[posx][posy] = now;
     printmap(realmap,n);
@@ -296,13 +296,22 @@ void PLAY(int type,int now)
     if((type&2)) tmp = computer_move(-now,nx,ny);
     else tmp = player_move(-now,nx,ny);
     if(tmp) return;
+    if(tmp)
+    {
+        Sleep(100000);
+        de=1;
+    }
+    if(step==10) savecurmap();
     PLAY(type, now);
 }
 
 void inputmap()
 {
     for(int i=1;i<=n;i++) for(int j=1;j<=n;j++) 
+    {
         scanf("%d",&realmap[i][j]);
+        if(realmap[i][j]==2) realmap[i][j]=-1;
+    }
 }
 void outputcurmap()
 {
@@ -319,33 +328,35 @@ void outputcurmap()
 }
 void savecurmap()
 {
-    freopen("curmap.out","w",stdout);
+    // freopen("curmap.out","w",stdout);
+    FILE *fout; fout = fopen("curmap.out","w");
     char outstr[5];
     for(int i=1;i<=n;i++,puts("")) 
     {
         for(int j=1;j<=n;j++)
         {
-            printf("%d ",realmap[i][j]); 
+            if(realmap[i][j]<0) printf("2 ");
+            else fprintf(fout ,"%d ",realmap[i][j]); 
         }
     }
-    fclose(stdout);
+    // fclose(stdout);
 }
 
 int checkwinner() //O(map)
 {
     memcpy(mp,realmap,sizeof(mp)); 
-    memcpy(val,anow,sizeof(val)); assess::o=1; assess::x=-1;
+    memcpy(val,anxt,sizeof(val)); assess::o=-1; assess::x=1;
     ll nval = assess::Map();
-    if(nval >= anow[1]) return 1;
+    if(nval >= anxt[1]-eps) return 1;
     
-    memcpy(val,anow,sizeof(val)); assess::o=-1; assess::x=1;
+    memcpy(val,anow,sizeof(val)); assess::o=1; assess::x=-1;
     nval = assess::Map();
-    if(nval >= anow[1]) return -1;
+    if(nval >= anxt[1]-eps) return -1;
     
     return 0;
 }
 
-#ifndef __AI_H
+#ifdef __AI_H
 int main()
 {
     freopen("a.in","r",stdin);

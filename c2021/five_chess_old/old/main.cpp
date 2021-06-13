@@ -1,13 +1,21 @@
+#include <cstdio>
+#include <algorithm>
+#include <windows.h>
+// #pragma GCC optimize(3)
+using namespace std;
 
-#include "func.h"
+// #define __AI_H
+// #include "AI.h"
+
+// #define __Double_H
+// #include "Double_screen_buffer.h"
 
 
 int main()
 {
     // freopen("map.in","r",stdin);
     // freopen("curmap.out","r",stdin);
-    int step=1; 
-    step=inputmap();
+    // inputmap();
     memcpy(cur[0].a,realmap,sizeof(cur[0].a));
     int to;
     initconsolveScreenBuffer();
@@ -24,10 +32,10 @@ int main()
         switch(to)
         {
             // case 1: two_player(); break;
-            case 1: PLAY(0,step); Sleep(1000000); break;
-            case 2: PLAY(1,step); Sleep(1000000); break;
-            case 3: PLAY(2,step); Sleep(1000000); break;
-            case 4: PLAY(3,step); Sleep(1000000); break;
+            case 1: PLAY(0,1); Sleep(1000000); break;
+            case 2: PLAY(1,1); Sleep(1000000); break;
+            case 3: PLAY(2,1); Sleep(1000000); break;
+            case 4: PLAY(3,1); Sleep(1000000); break;
         }
         if(to==0) break;
     }
