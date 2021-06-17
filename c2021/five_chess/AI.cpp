@@ -13,10 +13,10 @@ int mp[N1][N1]; //0 empty   1 o   -1 x
 // previous
 // int anxt[]={0, 700000, 70000, 4000, 3900, 30, 28, 5};
 // int anow[]={0, 300000, 30000, 3500, 3300, 24, 22, 6};
-int anxt[]={0, 900000, 90000, 7500, 7000, 90, 28, 5};
-int anow[]={0, 400000,  40000, 1200, 1050, 80, 22, 6};
-// int anow[]={0, 900000, 90000, 7500, 7000, 30, 28, 5};
-// int anxt[]={0, 400000,  40000, 3000, 2500, 24, 22, 6};
+// int anxt[]={0, 900000, 90000, 7500, 7000, 90, 28, 5};
+// int anow[]={0, 400000,  40000, 1200, 1050, 80, 22, 6};
+int anxt[]={0, 40000000, 320000, 24000, 20000, 90, 28, 5};
+int anow[]={0, 17000000, 150000, 3500, 3000, 80, 22, 6};
 int val[N1];
 //val: 
 // 1:连5
@@ -28,8 +28,6 @@ int val[N1];
 // 7:活1
 int de;
 
-// struct ChessMap{ int a[N1][N1]; }cur[N1];
-// int realmap[N1][N1];
 namespace assess{
 int end4[N1][N1], ed[N1] ,num[N1], o,x;
 
@@ -137,7 +135,8 @@ ll Row(int *row,int len)
     ans+=check67(row,len);
     return ans;
 }
-int row[N1];
+const int L1=25;
+int row[L1];
 ll Direct(int cs,int rs,int px,int py)
 {
     ll ans=0; 
@@ -149,7 +148,7 @@ ll Direct(int cs,int rs,int px,int py)
         {
             row[cnt]=mp[i][j]; 
         }
-        row[cnt]=x; // 堵
+        for(int i=cnt;i<L1;i++) row[i]=x; // 堵
         ans+=Row(row,cnt);
         for(int i=r,j=1,k=1;i>=1&&i<=n&&j>=1&&j<=n;i+=px,j+=py,k++)
         {
@@ -164,8 +163,8 @@ ll Direct(int cs,int rs,int px,int py)
         {
             row[cnt]=mp[i][j]; 
         }
-        row[cnt]=x;// 堵
-        if(c==10)
+        for(int i=cnt;i<L1;i++) row[i]=x; // 堵
+        if(c==4)
             de=1;
         ans+=Row(row,cnt);
         for(int i=rs,j=c,k=1;i>=1&&i<=n&&j>=1&&j<=n;i+=px,j+=py,k++)
@@ -180,7 +179,7 @@ ll Map()
 {
     ll ans=0;
     memset(end4,0,sizeof(end4));
-    if(mp[9][6]==1)
+    if(mp[12][7]==-1)
         de=1;
     ans+=Direct(2,1,1,1); //向右下
     ans+=Direct(2,n,-1,1); //向右上
@@ -238,7 +237,7 @@ ll AlphaBeta(int dep,int now,int Alpha,int Beta)
         if(i==6 && j==10)
             de=1;
         memcpy(mp,cur[dep-1].a,sizeof(mp)); mp[i][j]=now;
-        if(i==7 && j==6)
+        if(i==12 && j==7 && dep==2)
             de=1;
         if(i==6 && j==5)
             de=1;
@@ -259,12 +258,12 @@ ll AlphaBeta(int dep,int now,int Alpha,int Beta)
         return ma;
     }
     if(dep==dfs_deep) return ma;
-    // if(dep==1) swap(piece[1],piece[5]);
+    if(dep==1) swap(piece[1],piece[4]);
     for(int k=1;k <= bfs_num;k++)
     {
         int i = piece[k].x, j = piece[k].y;
         memcpy(cur[dep].a,cur[dep-1].a,sizeof(mp)); cur[dep].a[i][j]=now;
-        if(dep==1)
+        if(dep==3)
             de=1;
         tmp = -AlphaBeta(dep+1,-now,-Beta,-Alpha);
         if(dep==1)

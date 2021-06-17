@@ -21,7 +21,7 @@ using namespace std;
 #define dd double
 #define ull unsigned long long 
 
-const int n=15, N1=17, inf=0x3f3f3f3f, eps=100000;
+const int n=15, N1=17, inf=0x3f3f3f3f, eps=500000;
 const int M1=17, m=15;
 
 //func in AI.cpp

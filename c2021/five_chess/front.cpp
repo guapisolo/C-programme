@@ -79,7 +79,7 @@ int inputmap()
     }
     fclose(fout);
     // return -1;
-    return -1;
+    return 1;
 }
 void savecurmap()
 {
