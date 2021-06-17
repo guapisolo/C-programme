@@ -1,6 +1,9 @@
 
 #include "func.h"
 
+// extern ChessMap cur[N1];
+// extern struct ChessMap cur[N1];
+// extern struct ChessMap *cur;
 
 int main()
 {
@@ -12,6 +15,7 @@ int main()
     int to;
     initconsolveScreenBuffer();
     // PLAY(3,1);
+    // trail = 1;
     while(1)
     {
         system("cls");

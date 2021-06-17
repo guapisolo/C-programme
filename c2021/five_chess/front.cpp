@@ -4,6 +4,9 @@
 
 // extern ChessMap cur[N1];
 // extern int realmap[N1][N1];
+// extern ChessMap cur[N1];
+// extern struct ChessMap cur[N1];
+// extern struct ChessMap *cur;
 
 int get_command()
 {
@@ -49,6 +52,21 @@ int get_toward()
     return to;
 }
 // char output[1000];
+struct Inform{ int i,j,val,tmp; }info[N1]; int inf_cnt=0;
+void push_inform(int i,int j,ll val,ll tmp)
+{
+    inf_cnt++;
+    info[inf_cnt]=(Inform){i,j,val,tmp};
+}
+void inform_out()
+{
+    FILE *fout; fout = fopen("infrom.out","w");
+    for(int i=1;i<=inf_cnt;i++)
+    {
+        fprintf(fout,"%d %d %d %d\n",info[i].i,info[i].j,info[i].val,info[i].tmp);
+    }
+    fclose(fout);
+}
 
 int inputmap()
 {
@@ -60,6 +78,7 @@ int inputmap()
         else if(realmap[i][j]==3) nx=i, ny=j, realmap[i][j]=0;
     }
     fclose(fout);
+    // return -1;
     return -1;
 }
 void savecurmap()
@@ -86,13 +105,13 @@ void printmap(int mp[17][17],int n)
         {
             switch(mp[i][j])
             {
-                case -1 : dprintf("●",0,FB|FG|FR|FI,BB|BR,fl); break;
-                case 0  : dprintf(" ",0,0,BB|BR,fl); break;
-                case 1  : dprintf("●",0,0,BB|BR,fl); break;
+                case -1 : dprintf("● ",0,FB|FG|FR|FI,BB|BR,fl); break;
+                case 0  : dprintf("  ",0,0,BB|BR,fl); break;
+                case 1  : dprintf("● ",0,0,BB|BR,fl); break;
                 
-                case 2  : dprintf("●",0,FB|FG|FR|FI,BG,fl); break;
-                case 3  : dprintf(" ",0,0,BG,fl); break;
-                case 4  : dprintf("●",0,0,BG,fl); break;
+                case 2  : dprintf("● ",0,FB|FG|FR|FI,BG,fl); break;
+                case 3  : dprintf("  ",0,0,BG,fl); break;
+                case 4  : dprintf("● ",0,0,BG,fl); break;
             }
         }
         if(i==n) fl=1;

@@ -6,6 +6,8 @@
 #include <stdlib.h>
 #include <conio.h>
 #include <time.h>
+#define ll int 
+#define dd double 
 using namespace std;
 
 #define FG FOREGROUND_GREEN
@@ -43,16 +45,23 @@ extern void savecurmap();
 extern void outputcurmap();
 extern void printmap(int mp[17][17],int n);
 extern void place_piece(int mp[M1][M1],int now,int n);
+extern void push_inform(int i,int j,ll val,ll tmp);
+extern void inform_out();
 // #endif
 
-extern struct ChessMap{ int a[N1][N1]; }cur[N1];
+struct ChessMap{ int a[17][17]; };
+// ChessMap cur[17];
+// extern struct ChessMap
+extern ChessMap cur[N1];
 extern int realmap[N1][N1];
 extern int nx,ny;
+// extern struct Play{ int x,y; ll val; };
 // struct ChessMap{ int a[N1][N1]; }cur[N1];
 // int realmap[N1][N1];
 
 //想定义一个全局变量结果报错，发现是在头文件中定义，却没有在别的.c文件中初始化。
 
+// extern struct ChessMap{ int a[N1][N1]; }cur[N1];
 
 
 // //func in AI.cpp

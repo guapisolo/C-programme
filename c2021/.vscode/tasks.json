@@ -7,8 +7,8 @@
             "command": "g++",
             // "command": "gcc",
             "args": [
-                // "${file}",
-                "${fileDirname}\\*.cpp",
+                "${file}",
+                // "${fileDirname}\\*.cpp",
                 "-o",
                 "${fileDirname}/${fileBasenameNoExtension}.exe",
                 // "${workspaceFolder}\\${fileBasenameNoExtension}.exe",
