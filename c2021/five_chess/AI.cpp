@@ -10,12 +10,13 @@
 using namespace std;
 
 int mp[N1][N1]; //0 empty   1 o   -1 x
+int idmap[N1][N1];
 // previous
 // int anxt[]={0, 700000, 70000, 4000, 3900, 30, 28, 5};
 // int anow[]={0, 300000, 30000, 3500, 3300, 24, 22, 6};
 // int anxt[]={0, 900000, 90000, 7500, 7000, 90, 28, 5};
 // int anow[]={0, 400000,  40000, 1200, 1050, 80, 22, 6};
-int anxt[]={0, 40000000, 1000000, 400000, 50000, 90, 28, 5};
+int anxt[]={0, 40000000, 1000000, 400000, 50000, 100, 35, 7};
 int anow[]={0, 17000000, 120000, 3500, 3000, 80, 22, 6};
 int val[N1];
 //val: 
@@ -278,12 +279,13 @@ int computer_move(int now)
 {
     int id = AlphaBeta(1,now,-inf,inf);
     realmap[posx][posy] = now;
+    idmap[posx][posy]=++step;
     printmap(realmap,n);
     nx = posx, ny = posy;
     
     // inform_out();
     int fl = checkwinner(); if(fl) return fl;
-    step++;
+    // step++;
     memcpy(cur[0].a,realmap,sizeof(cur[0].a));
     return 0;
 }
@@ -291,8 +293,10 @@ int player_move(int now)
 {
     place_piece(realmap,now,n);
     realmap[nx][ny] = now;
+    idmap[nx][ny]=++step;
+    printmap(realmap,n);
     int fl = checkwinner(); if(fl) return fl;
-    step++;
+    // step++;
     memcpy(cur[0].a,realmap,sizeof(cur[0].a));
     return 0;
 }

@@ -45,7 +45,7 @@ char str[100];
 
 void SwitchHandle()
 {
-    now^=1; SetConsoleCursorPosition(output[now],coord);
+    SetConsoleCursorPosition(output[now],coord); now^=1; 
 }
 void dprintf(const char *s,int len,int Foreground_color,int Background_color,int is_end)
 {

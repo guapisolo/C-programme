@@ -99,20 +99,47 @@ void savecurmap()
 void printmap(int mp[17][17],int n)
 {
     int fl=0;
+    char outstr[10];
     for(int i=1;i<=n;i++)
     {
         for(int j=1;j<=n;j++)
         {
+            if(idmap[i][j]<=9) sprintf(outstr," %d",idmap[i][j]);
+            else sprintf(outstr,"%d",idmap[i][j]);
+            
             switch(mp[i][j])
             {
-                case -1 : dprintf("● ",0,FB|FG|FR|FI,BB|BR,fl); break;
+                case -1 : dprintf(outstr,0,0,BB|BG|BR|BI,fl); break;
                 case 0  : dprintf("  ",0,0,BB|BR,fl); break;
-                case 1  : dprintf("● ",0,0,BB|BR,fl); break;
+                case 1  : dprintf(outstr,0,FB|FG|FR|FI,0,fl); break;
                 
-                case 2  : dprintf("● ",0,FB|FG|FR|FI,BG,fl); break;
+                case 2  : dprintf(outstr,0,0,BB|BG|BR|BI,fl); break;
                 case 3  : dprintf("  ",0,0,BG,fl); break;
-                case 4  : dprintf("● ",0,0,BG,fl); break;
+                case 4  : dprintf(outstr,0,FB|FG|FR|FI,0,fl); break;
+
             }
+            // switch(mp[i][j])
+            // {
+            //     case -1 : dprintf(outstr,0,FB|FG|FR|FI,BB|BR,fl); break;
+            //     case 0  : dprintf("  ",0,0,BB|BR,fl); break;
+            //     case 1  : dprintf(outstr,0,0,BB|BR,fl); break;
+                
+            //     case 2  : dprintf(outstr,0,FB|FG|FR|FI,BG,fl); break;
+            //     case 3  : dprintf("  ",0,0,BG,fl); break;
+            //     case 4  : dprintf(outstr,0,0,BG,fl); break;
+
+            // }
+            // switch(mp[i][j])
+            // {
+            //     case -1 : dprintf("● ",0,FB|FG|FR|FI,BB|BR,fl); break;
+            //     case 0  : dprintf("  ",0,0,BB|BR,fl); break;
+            //     case 1  : dprintf("● ",0,0,BB|BR,fl); break;
+                
+            //     case 2  : dprintf("● ",0,FB|FG|FR|FI,BG,fl); break;
+            //     case 3  : dprintf("  ",0,0,BG,fl); break;
+            //     case 4  : dprintf("● ",0,0,BG,fl); break;
+
+            // }
         }
         if(i==n) fl=1;
         dprintf("\n",0,0,BB|BR,fl);
@@ -167,7 +194,6 @@ void place_piece(int mp[M1][M1],int now,int n)
         }else if(to==5){
             if(mp[nx][ny]==3){
                 mp[nx][ny]=now+3;
-                printmap(mp,n);
                 return;
             }else{
                 continue;
