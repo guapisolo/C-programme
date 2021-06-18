@@ -13,7 +13,7 @@
                 "${fileDirname}/${fileBasenameNoExtension}.exe",
                 // "${workspaceFolder}\\${fileBasenameNoExtension}.exe",
                 // "-O2",
-                // "-O3",
+                "-O3",
                 "-g",
                 "-m64",
                 "-Wall",

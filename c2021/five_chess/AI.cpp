@@ -15,8 +15,8 @@ int mp[N1][N1]; //0 empty   1 o   -1 x
 // int anow[]={0, 300000, 30000, 3500, 3300, 24, 22, 6};
 // int anxt[]={0, 900000, 90000, 7500, 7000, 90, 28, 5};
 // int anow[]={0, 400000,  40000, 1200, 1050, 80, 22, 6};
-int anxt[]={0, 40000000, 320000, 24000, 20000, 90, 28, 5};
-int anow[]={0, 17000000, 150000, 3500, 3000, 80, 22, 6};
+int anxt[]={0, 40000000, 300000, 50000, 15000, 90, 28, 5};
+int anow[]={0, 17000000, 30000, 3500, 3000, 80, 22, 6};
 int val[N1];
 //val: 
 // 1:连5
@@ -164,8 +164,6 @@ ll Direct(int cs,int rs,int px,int py)
             row[cnt]=mp[i][j]; 
         }
         for(int i=cnt;i<L1;i++) row[i]=x; // 堵
-        if(c==4)
-            de=1;
         ans+=Row(row,cnt);
         for(int i=rs,j=c,k=1;i>=1&&i<=n&&j>=1&&j<=n;i+=px,j+=py,k++)
         {
@@ -234,16 +232,8 @@ ll AlphaBeta(int dep,int now,int Alpha,int Beta)
     int tx=0,ty=0;
     for(int i=1;i<=n;i++) for(int j=1;j<=n;j++) if(!cur[dep-1].a[i][j]) 
     {
-        if(i==6 && j==10)
-            de=1;
         memcpy(mp,cur[dep-1].a,sizeof(mp)); mp[i][j]=now;
-        if(i==12 && j==7 && dep==2)
-            de=1;
-        if(i==6 && j==5)
-            de=1;
         threat = assess::totMap(now,-now);
-        if(threat==3095)
-            de=1;
         if(threat>ma) tx = i, ty = j;
         ma = max(ma,threat); 
         piece[++pcnt] = (Play){i,j,threat}; //记录当前落子的估值
@@ -258,40 +248,40 @@ ll AlphaBeta(int dep,int now,int Alpha,int Beta)
         return ma;
     }
     if(dep==dfs_deep) return ma;
-    if(dep==1) swap(piece[1],piece[4]);
+    // if(dep==1) swap(piece[1],piece[4]);
     for(int k=1;k <= bfs_num;k++)
     {
         int i = piece[k].x, j = piece[k].y;
         memcpy(cur[dep].a,cur[dep-1].a,sizeof(mp)); cur[dep].a[i][j]=now;
-        if(dep==3)
-            de=1;
         tmp = -AlphaBeta(dep+1,-now,-Beta,-Alpha);
-        if(dep==1)
-        {
-            de=1;
-            push_inform(i,j,piece[k].val,tmp);
-        }
+        // if(dep==1)
+        // {
+        //     de=1;
+        //     push_inform(i,j,piece[k].val,tmp);
+        // }
         if(tmp >= Beta) return Beta;
         if(tmp > Alpha){
             Alpha = tmp;
             id = k;
         } 
     }
-    if(dep==1){ posx = piece[id].x; posy = piece[id].y; }
+    if(dep==1)
+    { 
+        if(Alpha <= -anow[1]+eps) id=1;
+        posx = piece[id].x; posy = piece[id].y; 
+    }
     return Alpha;
 }
 int step=0,lx=8,ly=8;
 
 int computer_move(int now)
 {
-    if(step==0)
-        de=1;
     int id = AlphaBeta(1,now,-inf,inf);
     realmap[posx][posy] = now;
     printmap(realmap,n);
     nx = posx, ny = posy;
     
-    inform_out();
+    // inform_out();
     int fl = checkwinner(); if(fl) return fl;
     step++;
     memcpy(cur[0].a,realmap,sizeof(cur[0].a));

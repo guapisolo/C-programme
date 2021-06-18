@@ -10,7 +10,7 @@ int main()
     // freopen("map.in","r",stdin);
     // freopen("curmap.out","r",stdin);
     int step=1; 
-    step=inputmap();
+    // step=inputmap();
     memcpy(cur[0].a,realmap,sizeof(cur[0].a));
     int to;
     initconsolveScreenBuffer();
