@@ -208,7 +208,7 @@ ll totMap(int now,int nxt)
 //记录不同位置落子的结果信息
 
 const int dfs_deep=6;
-const int bfs_num=5;
+const int bfs_num=6;
 struct Play{ int x,y; int val; }; 
 
 //plan A: 迭代加深搜索，每次搜4个最优状态
@@ -242,7 +242,7 @@ ll AlphaBeta(int dep,int now,int Alpha,int Beta)
     //对 对手威胁值 最大 
     sort(piece+1,piece+pcnt+1,cmpmax);
     int id=0;
-    if( ma <= -anxt[1]+eps || ma >= anow[1]-eps )
+    if( ma <= -anxt[4]+eps || ma >= anow[2]-eps )
     {
         if(dep==1) posx = tx, posy = ty;
         return ma;
@@ -267,7 +267,7 @@ ll AlphaBeta(int dep,int now,int Alpha,int Beta)
     }
     if(dep==1)
     { 
-        if(Alpha <= -anow[1]+eps) id=1;
+        if(Alpha <= -anxt[4]+eps) id=1;
         posx = piece[id].x; posy = piece[id].y; 
     }
     return Alpha;
