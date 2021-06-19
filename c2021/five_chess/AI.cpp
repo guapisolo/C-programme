@@ -226,10 +226,10 @@ ll Map()
 ll totMap(int now,int nxt) 
 {
     //calc now
-    ull ha = zob::hash(mp);
-    ll ans =zob::find(ha);
-    if(ans!=inf) return ans;
-    
+    // ull ha = zob::hash(mp);
+    // ll ans =zob::find(ha);
+    // if(ans!=inf) return ans;
+    ll ans;
     memcpy(val,anow,sizeof(anow)); 
     o=now; x=nxt;
     ans=Map();
@@ -240,7 +240,7 @@ ll totMap(int now,int nxt)
     ans-=Map();
     
     // return ans;
-    zob::val[ha]=ans;
+    // zob::val[ha]=ans;
     return ans;
 }
 };
@@ -261,10 +261,10 @@ void outputcurmap();
 void savecurmap();
 
 
-ll analysis_kill()
-{
+// ll analysis_kill()
+// {
     
-}
+// }
 
 int posx, posy;
 //改为 启发式搜索 + alpha-beta剪枝
@@ -329,7 +329,7 @@ int computer_move(int now)
     int id = AlphaBeta(1,now,-inf,inf);
     realmap[posx][posy] = now;
     idmap[posx][posy]=++step;
-    printmap(realmap,n);
+    printmap(realmap,n,now==1?0:1);
     nx = posx, ny = posy;
     
     // inform_out();
@@ -343,7 +343,7 @@ int player_move(int now)
     place_piece(realmap,now,n);
     realmap[nx][ny] = now;
     idmap[nx][ny]=++step;
-    printmap(realmap,n);
+    printmap(realmap,n,now==1?0:1);
     int fl = checkwinner(); if(fl) return fl;
     // step++;
     memcpy(cur[0].a,realmap,sizeof(cur[0].a));

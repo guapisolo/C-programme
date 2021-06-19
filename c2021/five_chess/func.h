@@ -51,7 +51,7 @@ extern int get_toward();
 extern int inputmap();
 extern void savecurmap();
 extern void outputcurmap();
-extern void printmap(int mp[17][17],int n);
+extern void printmap(int mp[17][17],int n,int id);
 extern void place_piece(int mp[M1][M1],int now,int n);
 extern void push_inform(int i,int j,ll val,ll tmp);
 extern void inform_out();

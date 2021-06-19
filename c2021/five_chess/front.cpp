@@ -94,10 +94,18 @@ void savecurmap()
     }
     fclose(fout);
 }
-void printmap(int mp[17][17],int n)
+clock_t time_now,time_pre,time_calc[2];
+void printmap(int mp[17][17],int n,int id)
 {
     int fl=0;
-    char outstr[10];
+    char outstr[10]; 
+    time_now=clock(); 
+    time_calc[id] += time_now-time_pre; time_pre=time_now;
+    for(int i=0;i<2;i++)
+    {
+        sprintf(outstr,"Player%d: %.7lfs\n",i+1,(double)(time_calc[i])/CLOCKS_PER_SEC);
+        dprintf(outstr,0,FB|FG|FR|FI,0,0);
+    }
     for(int i=1;i<=n;i++)
     {
         for(int j=1;j<=n;j++)
@@ -177,7 +185,7 @@ void place_piece(int mp[M1][M1],int now,int n)
     int to;
     // memcpy(outmap,mp,sizeof(outmap)); outmap[nx][ny]+=3;
     mp[nx][ny]+=3;
-    printmap(mp,n);
+    printmap(mp,n,now==1?0:1);
     while(1)
     {
         to = get_toward();
@@ -188,7 +196,7 @@ void place_piece(int mp[M1][M1],int now,int n)
             mp[nx][ny]-=3;
             nx+=fx[to], ny+=fy[to];
             mp[nx][ny]+=3;
-            printmap(mp,n);
+            printmap(mp,n,now==1?0:1);
         }else if(to==5){
             if(mp[nx][ny]==3){
                 mp[nx][ny]=now+3;
