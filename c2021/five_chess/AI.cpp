@@ -208,8 +208,8 @@ ll totMap(int now,int nxt)
 };
 //记录不同位置落子的结果信息
 
-const int dfs_deep=6;
-const int bfs_num=6;
+const int dfs_deep=7;
+const int bfs_num=5;
 struct Play{ int x,y; int val; }; 
 
 //plan A: 迭代加深搜索，每次搜4个最优状态
