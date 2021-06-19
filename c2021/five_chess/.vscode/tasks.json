@@ -18,8 +18,8 @@
                 "-m64",
                 "-Wall",
                 "-Wl,--stack=134217728",
-                // "-static-libgcc",
-                "-std=c++11",
+                "-static-libgcc",
+                "-std=c++17",
                 // "-std=c11",
                 // "-fexec-charset=GBK"
             ],

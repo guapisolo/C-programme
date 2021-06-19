@@ -9,6 +9,8 @@ int main()
 {
     // freopen("map.in","r",stdin);
     // freopen("curmap.out","r",stdin);
+    srand(time(NULL));
+    zobinit();
     int step=1; 
     // step=inputmap();
     memcpy(cur[0].a,realmap,sizeof(cur[0].a));

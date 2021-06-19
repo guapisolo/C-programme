@@ -30,6 +30,36 @@ int val[N1];
 // 8:活1
 int de;
 
+namespace zob{
+ull Rand[2][N1][N1];
+unordered_map<ull,int>val;
+ull hash(int mp[N1][N1])
+{
+    ull ans=0;
+    for(int i=1;i<=n;i++) for(int j=1;j<=n;j++)
+    {
+        switch(mp[i][j])
+        {
+            case 0: break;
+            case 1: ans^=Rand[0][i][j]; break; 
+            case -1: ans^=Rand[1][i][j]; break; 
+        }
+    }
+    return ans;
+}
+int find(ull ha)
+{
+    itm k=val.find(ha);
+    if(k==val.end()) return inf;
+    return (*k).second;
+}
+};
+
+void zobinit()
+{
+    for(int i=1;i<=n;i++) for(int j=1;j<=n;j++)
+        zob::Rand[0][i][j]=rand64(), zob::Rand[1][i][j]=rand64();
+}
 namespace assess{
 int end4[N1][N1], ed[N1] ,num[N1], o,x;
 
@@ -196,9 +226,13 @@ ll Map()
 ll totMap(int now,int nxt) 
 {
     //calc now
+    ull ha = zob::hash(mp);
+    ll ans =zob::find(ha);
+    if(ans!=inf) return ans;
+    
     memcpy(val,anow,sizeof(anow)); 
     o=now; x=nxt;
-    ll ans=Map();
+    ans=Map();
     
     //calc nxt
     memcpy(val,anxt,sizeof(anxt)); 
@@ -206,6 +240,7 @@ ll totMap(int now,int nxt)
     ans-=Map();
     
     // return ans;
+    zob::val[ha]=ans;
     return ans;
 }
 };

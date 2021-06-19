@@ -2,12 +2,10 @@
 #define front_exist
 #include "func.h"
 
-// extern ChessMap cur[N1];
-// extern int realmap[N1][N1];
-// extern ChessMap cur[N1];
-// extern struct ChessMap cur[N1];
-// extern struct ChessMap *cur;
-
+ull rand64()
+{
+    return (ull)rand() | ((ull)rand()<<15) | ((ull)rand()<<30) | ((ull)rand()<<45) | ((ull)rand()<<60);
+}
 int get_command()
 {
     int input=getch(),to;
