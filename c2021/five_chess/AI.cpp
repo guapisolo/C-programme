@@ -16,8 +16,8 @@ int idmap[N1][N1];
 // int anow[]={0, 300000, 30000, 3500, 3300, 24, 22, 6};
 // int anxt[]={0, 900000, 90000, 7500, 7000, 90, 28, 5};
 // int anow[]={0, 400000,  40000, 1200, 1050, 80, 22, 6};
-int anxt[]={0, 40000000, 1000000, 400000, 50000, 100, 35, 7};
-int anow[]={0, 17000000, 120000, 3500, 3000, 80, 22, 6};
+int anxt[]={0, 40000000, 1000000, 400000, 50000, 120, 50, 10, 1};
+int anow[]={0, 17000000, 120000, 3500, 3000, 100, 40, 7, 1};
 int val[N1];
 //val: 
 // 1:连5
@@ -25,8 +25,9 @@ int val[N1];
 // 3:冲4
 // 4:活3
 // 5:眠3
-// 6:活2
-// 7:活1
+// 6:连续活2
+// 7:散2
+// 8:活1
 int de;
 
 namespace assess{
@@ -112,17 +113,19 @@ ll check45(int *row,int len)
     return ans;
 }
 //二 一
+//连续2的得分应该更高
 ll check67(int *row,int len) 
 {
     ll ans=0; int fl, cnt;
     for(int i=1;i<=len;i++) 
     {
         fl=1; cnt=0;
+        if(row[i]==o && row[i+1]==o) ans+=val[6];
         for(int j=0;j<6;j++) 
             if(row[i+j]==o){ cnt++; }
             else if(row[i+j]==x){ fl=0; break; }
         if(!fl) continue;
-        if(cnt==2) ans+=val[6]; else if(cnt==1) ans+=val[7];
+        if(cnt==2) ans+=val[7]; else if(cnt==1) ans+=val[8];
     }
     return ans;
 }
@@ -222,8 +225,14 @@ int checkwinner();
 void outputcurmap();
 void savecurmap();
 
+
+ll analysis_kill()
+{
+    
+}
+
 int posx, posy;
-//改为 迭代加深 + alpha-beta剪枝
+//改为 启发式搜索 + alpha-beta剪枝
 ll AlphaBeta(int dep,int now,int Alpha,int Beta)
 {
     // check(now,nxt);
@@ -237,6 +246,11 @@ ll AlphaBeta(int dep,int now,int Alpha,int Beta)
         threat = assess::totMap(now,-now);
         if(threat>ma) tx = i, ty = j;
         ma = max(ma,threat); 
+        // if( threat <= -anxt[3]+eps || threat >= anow[1]-eps )
+        // {
+        //     if(dep==1) posx = tx, posy = ty;
+        //     return ma;
+        // }
         piece[++pcnt] = (Play){i,j,threat}; //记录当前落子的估值
     }
     //threat：当前局面评分 越高越好
