@@ -16,8 +16,10 @@ int idmap[N1][N1];
 // int anow[]={0, 300000, 30000, 3500, 3300, 24, 22, 6};
 // int anxt[]={0, 900000, 90000, 7500, 7000, 90, 28, 5};
 // int anow[]={0, 400000,  40000, 1200, 1050, 80, 22, 6};
-int anxt[]={0, 40000000, 1000000, 400000, 50000, 120, 50, 10, 1};
-int anow[]={0, 17000000, 120000, 3500, 3000, 100, 40, 7, 1};
+int anxt[]={0, 40000000, 1000000, 400000, 50000, 100, 40, 7, 1};
+int anow[]={0, 17000000, 120000, 3500, 3000, 120, 50, 10, 1};
+// int anxt[]={0, 40000000, 1000000, 400000, 50000, 120, 50, 10, 1};
+// int anow[]={0, 17000000, 120000, 3500, 3000, 100, 40, 7, 1};
 int val[N1];
 //val: 
 // 1:连5
@@ -130,7 +132,7 @@ ll check45(int *row,int len)
             //双向活三威胁值更高，后续调整
             //中空活三
             if(!row[i-1] && !row[i+4]){ //_ o o _ o _ 
-                ans+=val[4]/2;
+                ans+=val[4]/4;
                 continue;
             }else if(!row[i-1] || !row[i+4]){ //_ o o _ o   or    o o o _ _
             //眠三
@@ -226,10 +228,10 @@ ll Map()
 ll totMap(int now,int nxt) 
 {
     //calc now
-    // ull ha = zob::hash(mp);
-    // ll ans =zob::find(ha);
-    // if(ans!=inf) return ans;
-    ll ans;
+    ull ha = zob::hash(mp);
+    ll ans =zob::find(ha);
+    if(ans!=inf) return ans;
+    // ll ans;
     memcpy(val,anow,sizeof(anow)); 
     o=now; x=nxt;
     ans=Map();
@@ -239,8 +241,7 @@ ll totMap(int now,int nxt)
     o=nxt; x=now;
     ans-=Map();
     
-    // return ans;
-    // zob::val[ha]=ans;
+    zob::val[ha]=ans;
     return ans;
 }
 };
@@ -266,6 +267,7 @@ void savecurmap();
     
 // }
 
+int step=0,lx=8,ly=8;
 int posx, posy;
 //改为 启发式搜索 + alpha-beta剪枝
 ll AlphaBeta(int dep,int now,int Alpha,int Beta)
@@ -299,6 +301,11 @@ ll AlphaBeta(int dep,int now,int Alpha,int Beta)
     }
     if(dep==dfs_deep) return ma;
     // if(dep==1) swap(piece[1],piece[4]);
+    if(step<8)
+    {
+        int fl=rand()%4;
+        if(fl==0) swap(piece[4],piece[6]), swap(piece[5],piece[7]);
+    }
     for(int k=1;k <= bfs_num;k++)
     {
         int i = piece[k].x, j = piece[k].y;
@@ -322,7 +329,6 @@ ll AlphaBeta(int dep,int now,int Alpha,int Beta)
     }
     return Alpha;
 }
-int step=0,lx=8,ly=8;
 
 int computer_move(int now)
 {
