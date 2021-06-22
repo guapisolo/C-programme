@@ -25,7 +25,6 @@ int get_toward()
     int input=getch(),to=0;
     switch(input)
     {
-        // case '': to=5; break; 
         case 'w': to=1; break;
         case 's': to=2; break;
         case 'a': to=3; break;
@@ -49,7 +48,7 @@ int get_toward()
     }
     return to;
 }
-// char output[1000];
+
 struct Inform{ int i,j,val,tmp; }info[N1]; int inf_cnt=0;
 void push_inform(int i,int j,ll val,ll tmp)
 {
@@ -124,17 +123,7 @@ void printmap(int mp[17][17],int n,int id)
                 case 4  : dprintf(outstr,0,FB|FG|FR|FI,0,fl); break;
 
             }
-            // switch(mp[i][j])
-            // {
-            //     case -1 : dprintf(outstr,0,FB|FG|FR|FI,BB|BR,fl); break;
-            //     case 0  : dprintf("  ",0,0,BB|BR,fl); break;
-            //     case 1  : dprintf(outstr,0,0,BB|BR,fl); break;
-                
-            //     case 2  : dprintf(outstr,0,FB|FG|FR|FI,BG,fl); break;
-            //     case 3  : dprintf("  ",0,0,BG,fl); break;
-            //     case 4  : dprintf(outstr,0,0,BG,fl); break;
-
-            // }
+            //没有数字但是有棋子的界面
             // switch(mp[i][j])
             // {
             //     case -1 : dprintf("● ",0,FB|FG|FR|FI,BB|BR,fl); break;
@@ -207,8 +196,3 @@ void place_piece(int mp[M1][M1],int now,int n)
         }else continue;
     }
 }
-// void place_piece(int x,int y,int now,int len)
-// {
-//     realmap[x][y] = now;
-//     printmap(realmap,len);
-// }

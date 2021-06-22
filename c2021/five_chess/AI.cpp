@@ -1,25 +1,15 @@
-// #ifndef __AI_H
-// #endif
 #define AI_exist
 #include "func.h"
-// #define __Double_H
-// #include "Double_screen_buffer.h"
-// #define __FRONT_H
-// #include "front.h"
 
 using namespace std;
 
 int mp[N1][N1]; //0 empty   1 o   -1 x
 int idmap[N1][N1];
 // previous
-// int anxt[]={0, 700000, 70000, 4000, 3900, 30, 28, 5};
-// int anow[]={0, 300000, 30000, 3500, 3300, 24, 22, 6};
-// int anxt[]={0, 900000, 90000, 7500, 7000, 90, 28, 5};
-// int anow[]={0, 400000,  40000, 1200, 1050, 80, 22, 6};
-int anxt[]={0, 40000000, 1000000, 400000, 50000, 100, 40, 7, 1};
-int anow[]={0, 17000000, 120000, 3500, 3000, 120, 50, 10, 1};
-// int anxt[]={0, 40000000, 1000000, 400000, 50000, 120, 50, 10, 1};
-// int anow[]={0, 17000000, 120000, 3500, 3000, 100, 40, 7, 1};
+int anxt[]={0, 40000000, 1000000, 400000, 50000, 100, 60, 3, 1};
+int anow[]={0, 17000000, 120000, 3500, 3000, 120, 72, 5, 1};
+// int anxt[]={0, 40000000, 1000000, 400000, 50000, 120, 30, 6, 1};
+// int anow[]={0, 17000000, 120000, 3500, 3000, 100, 25, 4, 1};
 int val[N1];
 //val: 
 // 1:连5
@@ -48,6 +38,16 @@ ull hash(int mp[N1][N1])
         }
     }
     return ans;
+}
+//后期此函数已经被替换掉 无需每一次都重新对整个棋盘进行哈希
+void updhash(ull &ha,int i,int j,int w) 
+{
+    switch(w)
+    {
+        case 0: break;
+        case 1: ha^=Rand[0][i][j]; break; 
+        case -1: ha^=Rand[1][i][j]; break; 
+    }
 }
 int find(ull ha)
 {
@@ -225,11 +225,9 @@ ll Map()
     return ans;
 }
 //   x: current player    o: next player  
-ll totMap(int now,int nxt) 
+ll totMap(ull ha,int now,int nxt) 
 {
-    //calc now
-    ull ha = zob::hash(mp);
-    ll ans =zob::find(ha);
+    ll ans = zob::find(ha);
     if(ans!=inf) return ans;
     // ll ans;
     memcpy(val,anow,sizeof(anow)); 
@@ -261,16 +259,10 @@ int checkwinner();
 void outputcurmap();
 void savecurmap();
 
-
-// ll analysis_kill()
-// {
-    
-// }
-
 int step=0,lx=8,ly=8;
 int posx, posy;
 //改为 启发式搜索 + alpha-beta剪枝
-ll AlphaBeta(int dep,int now,int Alpha,int Beta)
+ll AlphaBeta(int dep,int now,int Alpha,int Beta,ull ha)
 {
     // check(now,nxt);
     ll threat, ma=-inf, tmp; 
@@ -280,14 +272,11 @@ ll AlphaBeta(int dep,int now,int Alpha,int Beta)
     for(int i=1;i<=n;i++) for(int j=1;j<=n;j++) if(!cur[dep-1].a[i][j]) 
     {
         memcpy(mp,cur[dep-1].a,sizeof(mp)); mp[i][j]=now;
-        threat = assess::totMap(now,-now);
+        zob::updhash(ha,i,j,now);
+        threat = assess::totMap(ha,now,-now);
+        zob::updhash(ha,i,j,now);
         if(threat>ma) tx = i, ty = j;
         ma = max(ma,threat); 
-        // if( threat <= -anxt[3]+eps || threat >= anow[1]-eps )
-        // {
-        //     if(dep==1) posx = tx, posy = ty;
-        //     return ma;
-        // }
         piece[++pcnt] = (Play){i,j,threat}; //记录当前落子的估值
     }
     //threat：当前局面评分 越高越好
@@ -300,22 +289,20 @@ ll AlphaBeta(int dep,int now,int Alpha,int Beta)
         return ma;
     }
     if(dep==dfs_deep) return ma;
-    // if(dep==1) swap(piece[1],piece[4]);
-    if(step<8)
-    {
-        int fl=rand()%4;
-        if(fl==0) swap(piece[4],piece[6]), swap(piece[5],piece[7]);
-    }
-    for(int k=1;k <= bfs_num;k++)
+    //一些提升可调试性的随机化，可有可无
+    // if(step<8) 
+    // {
+    //     int fl=rand()%10;
+    //     if(fl==0) swap(piece[4],piece[6]);
+    //     if(fl==1) swap(piece[5],piece[7]);
+    // }
+    for(int k=1;k <= bfs_num+(step>=8?(step-8)/6:0);k++)
     {
         int i = piece[k].x, j = piece[k].y;
         memcpy(cur[dep].a,cur[dep-1].a,sizeof(mp)); cur[dep].a[i][j]=now;
-        tmp = -AlphaBeta(dep+1,-now,-Beta,-Alpha);
-        // if(dep==1)
-        // {
-        //     de=1;
-        //     push_inform(i,j,piece[k].val,tmp);
-        // }
+        zob::updhash(ha,i,j,now);
+        tmp = -AlphaBeta(dep+1,-now,-Beta,-Alpha,ha);
+        zob::updhash(ha,i,j,now);
         if(tmp >= Beta) return Beta;
         if(tmp > Alpha){
             Alpha = tmp;
@@ -330,17 +317,18 @@ ll AlphaBeta(int dep,int now,int Alpha,int Beta)
     return Alpha;
 }
 
+ull now_map_hash;
 int computer_move(int now)
 {
-    int id = AlphaBeta(1,now,-inf,inf);
+    int id = AlphaBeta(1,now,-inf,inf,now_map_hash);
     realmap[posx][posy] = now;
     idmap[posx][posy]=++step;
     printmap(realmap,n,now==1?0:1);
     nx = posx, ny = posy;
+    zob::updhash(now_map_hash,nx,ny,now);
     
-    // inform_out();
+    inform_out();
     int fl = checkwinner(); if(fl) return fl;
-    // step++;
     memcpy(cur[0].a,realmap,sizeof(cur[0].a));
     return 0;
 }
@@ -349,9 +337,9 @@ int player_move(int now)
     place_piece(realmap,now,n);
     realmap[nx][ny] = now;
     idmap[nx][ny]=++step;
+    zob::updhash(now_map_hash,nx,ny,now);
     printmap(realmap,n,now==1?0:1);
     int fl = checkwinner(); if(fl) return fl;
-    // step++;
     memcpy(cur[0].a,realmap,sizeof(cur[0].a));
     return 0;
 }
@@ -370,7 +358,6 @@ void PLAY(int type,int now)
         Sleep(100000);
         de=1;
     }
-    // if(step==10) savecurmap();
     PLAY(type, now);
 }
 
